@@ -1,13 +1,16 @@
 
-# Aura M6
+# Aura M6 LWP
 # Tech 6 Kernel 0.9.8.0
-# 15 june 2024
+# 07 July 2025
 
 # development build 4081 series #
 
-Welcome to the developer release of aura milestone 6.
+# Ashif Mahmud Chowdhury #
+# www.freelancer.com/u/SPARKtech #
 
-M6 is basically going to be a beta version of m5 with more apps being released. i would like to fix the ability for the multi threading to work again so that the tcp apps dont hang the system like the presently do.
+Welcome to the developer release of aura milestone 6 LWP.
+
+M6 LWP is basically going to be a beta version of M6 with more apps being released. i would like to fix the ability for the multi threading to work again so that the tcp apps dont hang the system like the presently do.
 
 orchid browser has been built using curl, xmlparsing, watt32 and a few other libraries. it has yet to be tested. also an app store which i am also planning to add the ability to download freedos packages again.
 
@@ -17,6 +20,9 @@ once this work is done aura will pretty much be a half decent platform to develo
 
 
 # New features #
+
+LWP library
+this has been added Low Wait Proceesing (LWP) to build smooth multi-threading application through the entier GUI system.
 
 Judas HD audio library
 this has been added for testing AC97 and iCH audio chipsets. unfortunately this will only output sound from the headphone jack and not speakers on laptops. kind of works but with errors but were getting there.
@@ -29,7 +35,8 @@ these are the new apps that are being built with the tcp stack.
 
 this is for the auram5new folder only. this should be the latest code from kdog.
 
-
+# LWP #
+LWP library has been added in this version. Now AuraM6 is running on LWP threads. To learn more about the AuraM6 LWP see the LWP directory example and documentations and open source codes.
 
 # Multithreading #
 fix multithreading in main.c. this will need a serious looking at so that aura can handle multiple applications at once.
