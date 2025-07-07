@@ -22,6 +22,11 @@
 #include "widget.h"
 #include "menu.h"
 
+//////////// ASHIF CODE ///////////////////
+#include "LWP.H"
+#define RTC0 0x00
+///////////////////////////////////////////
+
 // Debugging message macro
 //#define TSS(x) DebugMessage("Type: %s\tSize: %i %i", #x, sizeof(x), sizeof(x) % 8);
 
@@ -67,7 +72,13 @@ _PUBLIC char* KernelTextVersion = "Milestone 6 2b";
 */
 _PRIVATE void _SystemInit(void)
 {
+    ////////////////// ASHIF CODE //////////////////
+    // lwpEnterCriticalSection();  
+       
+    ///////////////////////////////////////////////
+
     DebugMessage("Aura System initialization");
+
 
     DebugMessage("Initializing DynLd...");
     InitDynLd();
@@ -109,8 +120,9 @@ _PRIVATE void _SystemInit(void)
     DebugMessage("External basic drivers initialized successfully");
 
     DebugMessage("Install screen...");
-    GSSystemScreenInit();
+    GSSystemScreenInit(); 
     DebugMessage("Screen initialized successfully");
+
 
     DebugMessage("Initialize Timer...");
     InitTimer();
@@ -153,6 +165,14 @@ _PRIVATE void _SystemInit(void)
     DebugMessage("Desktop initialized");
 
     DebugMessage("System Startup Complete\n");
+
+    //////////////////////////// ASHIF CODE //////////////////////////////////
+    while(1)
+    {
+        lwpYield(); // manual context switching
+    }
+    //////////////////////////////////////////////////////////////////////////
+
 }
 
 /**
@@ -270,14 +290,47 @@ int main(int argc, char* argv[])
 
     InstallEventHandler(_SystemEventHandler);
 
-    _SystemInit();
+    //_SystemInit();
+
+
+/////////////////////////// ASHIF CODE ///////////////////////
+    #define MAX_LWP_ID 256
+
+    int lwpids[MAX_LWP_ID] = {0};
+    int i = 0;
+
+    DebugMessage("Initializing LWP...");
+    if (lwpInit(RTC1024, 1))
+    {
+        DebugMessage("LWP initialized");
+    }
+    else
+    {
+        DebugMessage("Failed to intialization of LWP");
+        abort();                                                                    // exit on fail
+    }
+ 
+    DebugMessage("LWP: Starting thread of System Initializing '_SystemInit'...");
+    lwpids[i] = lwpSpawn(_SystemInit,NULL, 1024 * 1000, 1, 1);                      // Start LWP thread
+    DebugMessage("LWP: Returned lwpid: %d index: %d", lwpids[i], i);
+    lwpYield();                                                                     // manual context switching
+
+////////////////////////////////////////////////////////////////////////
 
     setjmp(MainPoint); // Secure return point
 
+
     while (!GSExit)
     {
+   
+        // SysPoll();
+   
+        ////////// ASHIF CODE ////////////////////////
+        lwpEnterCriticalSection();
         SysPoll();
-
+        lwpLeaveCriticalSection();
+        lwpYield();
+        //////////////////////////////////////////////
 #ifdef _OZONE__DJGPP_
         __dpmi_yield();
 #endif
@@ -289,7 +342,22 @@ int main(int argc, char* argv[])
 
     //GSSystemScreenQuit();
 
-    //SHUTDOWN SYSTEM		
+    //SHUTDOWN SYSTEM
+
+    //////////// ASHIF CODE ////////////////////
+ 
+    for (i = 0; i < MAX_LWP_ID; i++)
+    {
+        if (lwpids[i] > 0)
+        {
+             lwpKill(lwpids[i]);
+        }
+               
+    }
+    memset(lwpids, 0, sizeof(int) * MAX_LWP_ID);
+
+    /////////////////////////////////////////////
+
     ShutDownDynLd(); // Close all applications, and shut down dynamic loader
     ShutDownTimer();
     GSSystemMouseUninstall();
