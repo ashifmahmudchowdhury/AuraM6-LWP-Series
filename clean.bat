@@ -1,16 +1,17 @@
 echo clean directories:
-del c:\obj\xlib\*.o
-del c:\obj\xlib\widget\*.o
-del c:\obj\xapps\*.o
-del c:\obj\dms\*.o
-del c:\obj\dms\png\*.o
-del c:\obj\dms\jpg\*.o
-del c:\obj\dms\jpg\*.o
-del c:\obj\dms\mp3\*.o
-del c:\obj\dms\mp3\decoder\*.o
-del c:\obj\vfile\*.o
-del c:\bin\xapps\*.app
-del c:\bin\xlib\*.dl
+del obj\xlib\*.o
+del obj\xlib\widget\*.o
+del obj\xapps\*.o
+del obj\dms\*.o
+del obj\dms\png\*.o
+del obj\dms\jpg\*.o
+del obj\dms\jpg\*.o
+del obj\dms\mp3\*.o
+del obj\dms\mp3\decoder\*.o
+del obj\vfile\*.o
+del bin\xapps\*.app
+del bin\xlib\*.dl
+del bin\main.exe
 
 echo Aura M6 builder august 2023 build :4000 
 if exist c:\dj.bat goto cpath
@@ -20,10 +21,10 @@ goto error
 :full
 echo DJGPP was detected in the ROOT of C:\AURAGUI
 
-set path=c:\AURAGUI\DJGPP\BIN;%path%;c:\AURAGUI\djgpp\watt32\src;c:\AURAGUI\djgpp\watt32\bin;c:\AURAGUI\djgpp\watt32\util;c:\AURAGUI\djgpp\watt32\lib;c:\AURAGUI\djgpp\watt32\inc;c:\include\pdcurses\
+set path=c:\AURAGUI\DJGPP\BIN;%path%;c:\AURAGUI\djgpp\watt32\src;c:\AURAGUI\djgpp\watt32\bin;c:\AURAGUI\djgpp\watt32\util;c:\AURAGUI\djgpp\watt32\lib;c:\AURAGUI\djgpp\watt32\inc;c:\AURAGUI\include\pdcurses\
 set DJGPP=c:\AURAGUI\DJGPP\DJGPP.env
 set WATT_ROOT=c:\AURAGUI\DJGPP\watt32
-set PDCURSES_SRCDIR=c:\include\pdcurses\
+set PDCURSES_SRCDIR==c:\AURAGUI\include\pdcurses\
 make
 goto end
 

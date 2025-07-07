@@ -75,7 +75,8 @@ $(OBJ_DIR)/xapps/login.o \
 $(OBJ_DIR)/xapps/myip.o \
 $(OBJ_DIR)/xapps/htmlget.o \
 $(OBJ_DIR)/xapps/xtheme.o \
-$(OBJ_DIR)/xapps/mbox.o 
+$(OBJ_DIR)/xapps/mbox.o \
+$(OBJ_DIR)/xapps/counter.o		# ASHIF CODE
 #
 #$(OBJ_DIR)/xapps/ping.o \
 #$(OBJ_DIR)/xapps/convmpeg.o \
@@ -129,7 +130,8 @@ bin/xapps/mbox.app \
 bin/xapps/login.app \
 bin/xapps/myip.app \
 bin/xapps/xtheme.app \
-bin/xapps/htmlget.app
+bin/xapps/htmlget.app \
+bin/xapps/counter.app	#ASHIF CODE
 #bin/xapps/ping.app \
 #bin/xapps/convmpeg.app \
 #bin/xdev/aloha.app \
@@ -210,7 +212,8 @@ bin/xlib/grfx.dl \
 bin/xlib/sound.dl \
 bin/xlib/mp3.dl \
 bin/xlib/memfile.dl \
-bin/xlib/jpg.dl  
+bin/xlib/jpg.dl #\
+bin/xlib/lwp.dl			# ASHIF CODE  
 
 JPGOBJ = obj/dms/jpg/jpgalleg.o obj/dms/jpg/io.o obj/dms/jpg/encode.o obj/dms/jpg/decode.o obj/dms/jpg/color.o
 
@@ -426,6 +429,7 @@ obj/dms/watt/inffast.o
 MPEGOBJ=obj/dms/mpeg2/mpeg2.o 
 
 
+
 all : $(OBJ_DIR)/dynldlnk.o $(DYNLDLNK) $(LIBOBJ) $(LIBLD) $(APPOBJ) $(ILLKIRCHOBJ) $(APPLD) $(OBJ_LIST1) $(OBJ_LIST2) $(MAIN)
 	@echo Aura M6 0.9.8.0 has been built.
 
@@ -436,7 +440,7 @@ $(MAIN) : $(OBJ_LIST1) $(OBJ_LIST2)
 	gcc -g -o $(MAIN) $(OBJ_LIST1) src/xapps/TIMERASM.o $(OBJ_LIST2) $(LIB_LIST)
 
 $(OBJ_DIR)/xlib/%.o: src/xlib/%.c
-	gcc $(CFLAGS) -Dfar= -Dnear= -Dhuge= -c $< -o $@
+	gcc $(CFLAGS) -Dfar= -Dnear= -Dhuge= -c $< -o $@ 
 
 src/xapps/TIMERASM.o: src/xapps/TIMERASM.ASM
 	nasm $(AFLAGS) $<
@@ -482,10 +486,10 @@ $(OBJ_DIR)/%.o: src/%.c
 	gcc $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/xapps/command.o: src/xapps/command.c include/command.h
-	$(CC) $(CFLAGS) -c /src/xapps/command.c -o $(OBJ_DIR)/xapps/command.o
+	$(CC) $(CFLAGS) -c src/xapps/command.c -o $(OBJ_DIR)/xapps/command.o
 
 $(OBJ_DIR)/xapps/sys.o: src/xapps/sys.c include/command.h
-	$(CC) $(CFLAGS) -c /src/xapps/sys.c -o $(OBJ_DIR)/xapps/sys.o	
+	$(CC) $(CFLAGS) -c src/xapps/sys.c -o $(OBJ_DIR)/xapps/sys.o	
 
 obj/dms/png/%.o: src/dms/png/%.c
 	gcc $(CFLAGS) -c $< -o $@
@@ -516,6 +520,11 @@ bin/xlib/png.dl: $(PNGOBJ)
 
 bin/xlib/mpeg2.dl: $(MPEGOBJ)
 	$(DYNLDLNK) bin/xlib/mpeg2.dl $(MPEGOBJ)
+
+################# ASHIF CODE ###########################
+# bin/xlib/lwp.dl : $(OBJ_LWP)
+# 	$(DYNLDLNK) bin/xlib/lwp.dl $(OBJ_LWP)
+########################################################
 
 bin/xapps/illkirch.app: $(ILLKIRCHOBJ) res/illkirch.res
 	$(DYNLDLNK) -Rres/illkirch.res bin/xapps/illkirch.app $(ILLKIRCHOBJ)
@@ -593,6 +602,11 @@ bin/xapps/htmlget.app: $(OBJ_DIR)/xapps/htmlget.o
 
 bin/xapps/xtheme.app: $(OBJ_DIR)/xapps/xtheme.o
 	$(DYNLDLNK) bin/xapps/xtheme.app $(OBJ_DIR)/xapps/xtheme.o
+
+######################## ASHIF CODE ###################################
+bin/xapps/counter.app: $(OBJ_DIR)/xapps/counter.o
+	$(DYNLDLNK) bin/xapps/counter.app $(OBJ_DIR)/xapps/counter.o
+#######################################################################
 
 #bin/xdev/orchid.app: $(OBJ_DIR)/xdev/orchid.o 
 #	$(DYNLDLNK) bin/xdev/orchid.app $(OBJ_DIR)/xdev/orchid.o	
