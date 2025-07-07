@@ -9,6 +9,13 @@
 #include "kernel.h"
 #include "string.h"
 
+///////////////////////// ASHIF CODE ///////////////////////////////////////////
+
+#include "LWP.H"
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 l_bool UnLoadLibraries ( l_uid * );
 
 extern jmp_buf MainPoint;
@@ -225,6 +232,8 @@ l_bool LoadLibrary ( l_uid id ) {
                                 if ( !file ) return false;
                         }
                         app = DynLdRun(file,NULL);
+                        // DebugMessage("Ashif: Returned to LoadLibrary from DynLdRun...");
+                        // DebugMessage("Ashif: DynLdRun Returned in LoadLibrary: %08x", app);  // added by ASHIF
                         if ( !app ) return false;
                 } else
                         return false;
@@ -379,7 +388,6 @@ PApplication DynLdRunEx ( l_text Filename, l_int argc, l_text* argv, PApplicatio
         if ( DynHead.CloseOffset != NoneOffset ) App->Close = (void*)(((long)App->Data)+DynHead.CloseOffset);
         if ( DynHead.LibsOffset  != NoneOffset ) App->Libs  = (void*)(((long)App->Data)+DynHead.LibsOffset);
 
-
         if ( App->Libs )
                 if ( !LoadLibraries(App->Libs) ) {
                         free(App->Data);
@@ -403,6 +411,7 @@ PApplication DynLdRunEx ( l_text Filename, l_int argc, l_text* argv, PApplicatio
                 }
         }
 
+        
         if ( DynERROR )
         {
                 App->Close = NULL;
@@ -472,7 +481,7 @@ PApplication DynLdRunEx ( l_text Filename, l_int argc, l_text* argv, PApplicatio
                 FreeApplication(App);
                 return NULL;
         }
-
+        
         /* ** Due to unknown threading bugs, this section is unactivated **
 
         if ( App->Type == DYNLD_TYPEAPP )
@@ -520,8 +529,8 @@ PApplication DynLdRunEx ( l_text Filename, l_int argc, l_text* argv, PApplicatio
 
         return App;
 }
-////////////////////////////////////////////////////////////////////////////////
-PApplication DynLdRun ( l_text Filename, l_text Args )
+
+PApplication DynLdRun (l_text Filename, l_text Args)
 {
         PApplication App;
         l_int argc = Args ? 2 : 1;
@@ -533,6 +542,7 @@ PApplication DynLdRun ( l_text Filename, l_text Args )
         FreeArgs(argc,argv);
         return App;
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 PApplication DynLdRun2 ( l_text Filename, l_text Args )
 {
@@ -808,12 +818,14 @@ void RegistryLoadLibraries ( l_text Name ) {
                 PRegKey a = o->Last->Next;
                 PRegKey b = a;
                 l_uid id;
-                do {
+                do {                         // stopped by ASHIF for test only
                         memset(&id,0,sizeof(l_uid));
                         TextCopy((l_text)&id,a->Name);
+                        DebugMessage("Ashif: Loading library %s", id);
                         LoadLibrary(id);
+                        // LoadLibrary("png");
                         a = a->Next;
-                } while ( a != b );
+                } while ( a != b );          // stopped by ASHIF for test only
         }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -849,6 +861,33 @@ void InitDynLd ( void )
         SYSEXPORT(DynLdRunEx);
         SYSEXPORT(DynLdCommand);
 
+/////////////////////////// ASHIF CODE /////////////////////////////////
+        SYSEXPORT(lwpInit);
+        SYSEXPORT(lwpSpawn);
+        SYSEXPORT(lwpKill);
+        SYSEXPORT(lwpYield);
+        SYSEXPORT(lwpEnterCriticalSection);
+        SYSEXPORT(lwpLeaveCriticalSection);
+        SYSEXPORT(lwpThreadSuspend);
+        SYSEXPORT(lwpThreadResume);
+        // SYSEXPORT(lwpThreadCount);
+        // SYSEXPORT(lwpCreateMutex);
+        // SYSEXPORT(lwpDeleteMutex);
+        // SYSEXPORT(lwpLockMutex);
+        // SYSEXPORT(lwpReleaseMutex);
+        // SYSEXPORT(lwpCreateSemaphore);
+        // SYSEXPORT(lwpDeleteSemaphore);
+        // SYSEXPORT(lwpLockSemaphore);
+        // SYSEXPORT(lwpReleaseSemaphore);
+        // SYSEXPORT(lwpAdjustSemaphoreCount);
+        // SYSEXPORT(lwpGetSemaphoreCount);
+        // SYSEXPORT(lwpGetThreadPriority);
+        // SYSEXPORT(lwpGetpid);
+        // SYSEXPORT(lwpAdjustThreadPriority);
+        
+/////////////////////////////////////////////////////////////////////////////
+
+
         /* ** Due to unknown threading bugs, this section is unactivated **
 
         SYSEXPORT(AppSendEvent);
@@ -862,6 +901,7 @@ void InitDynLd ( void )
 
 void ShutDownDynLd ( void )
 {
+
         DebugMessage ("Shutting down DynLd...");
 
         RemoveTask(DynLdTCPId);
